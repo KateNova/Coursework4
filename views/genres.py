@@ -17,7 +17,11 @@ class GenresView(Resource):
 
     @auth_required
     def get(self) -> Tuple[List[Dict[str, Any]], int]:
-        genres: List[Genre] = genre_service.get_all()
+
+        if 'page' in request.args:
+            genres = genre_service.get_all(request.args['page'])
+        else:
+            genres: List[Genre] = genre_service.get_all()
         return genres_schema.dump(genres), 200
 
     @admin_required
@@ -27,7 +31,7 @@ class GenresView(Resource):
         return "", 201, {"location": f"/genres/{genre.id}"}
 
 
-@genre_ns.route('/<int:gid>')
+@genre_ns.route('/<int:gid>/')
 class GenreView(Resource):
 
     @auth_required

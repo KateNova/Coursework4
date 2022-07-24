@@ -1,5 +1,6 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
+from config import Config
 from dao.director import DirectorDAO
 
 from dao.model.director import Director
@@ -14,8 +15,13 @@ class DirectorService:
     def get_one(self, did: int) -> Director:
         return self.dao.get_one(did)
 
-    def get_all(self) -> List[Director]:
-        return self.dao.get_all()
+    def get_all(self, page: Optional[int] = None) -> List[Director]:
+        if page:
+            limit: Optional[int] = Config.ITEMS_ON_PAGE * page
+            offset: Optional[int] = limit - Config.ITEMS_ON_PAGE
+        else:
+            limit, offset = None, None
+        return self.dao.get_all(limit, offset)
 
     def create(self, director_d: Dict[str, Any]) -> Director:
         director: Director = Director(**director_d)

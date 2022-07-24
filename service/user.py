@@ -6,6 +6,7 @@ import hmac
 from typing import Dict, Any, List
 
 import jwt
+from flask_restx import abort
 
 from config import Config
 from dao.model.user import User
@@ -22,8 +23,8 @@ class UserService:
     def get_one(self, user_id: int) -> User:
         return self.dao.get_one(user_id)
 
-    def get_by_name(self, username: str) -> User:
-        return self.dao.get_by_name(username)
+    def get_by_email(self, email: str) -> User:
+        return self.dao.get_by_email(email)
 
     def get_all(self) -> List[User]:
         return self.dao.get_all()
@@ -37,7 +38,25 @@ class UserService:
                 setattr(user_by_id, k, v)
         return self.dao.update(user_by_id)
 
+    def update_password(self, user_id: int, data: Dict[str, Any]) -> User:
+        user_by_id: User = self.dao.get_one(user_id)
+        password_1 = data.get('password_1')
+        password_2 = data.get('password_2')
+
+        if password_1 is None or password_2 is None:
+            abort(401)
+
+        if password_1 != password_2:
+            abort(401)
+
+        new_password: str = self.encode_password(password_1)
+        user_by_id.password = new_password
+        return self.dao.update(user_by_id)
+
     def create(self, data: Dict[str, Any]) -> User:
+
+        if self.dao.get_by_email(data['email']) is not None:
+            abort(400)
 
         encoded_password: str = self.encode_password(data['password'])
         data['password'] = encoded_password

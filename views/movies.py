@@ -8,7 +8,6 @@ from implemented import movie_service
 
 movie_ns = Namespace('movies')
 
-# создаем экземпляры класса GenreSchema
 movie_schema = MovieSchema()
 movies_schema = MovieSchema(many=True)
 
@@ -24,9 +23,8 @@ class MoviesView(Resource):
             "genre_id": request.args.get("genre_id"),
             "year": request.args.get("year"),
         }
-
-        all_movies: List[Movie] = movie_service.get_all(filters)
-        return movies_schema.dump(all_movies), 200
+        movies = movie_service.get_all(filters, request.args.get('page'), request.args.get('status'))
+        return movies_schema.dump(movies), 200
 
     @admin_required
     def post(self) -> Tuple[str, int, Dict[str, str]]:
@@ -35,7 +33,7 @@ class MoviesView(Resource):
         return "", 201, {"location": f"/movies/{movie.id}"}
 
 
-@movie_ns.route('/<int:mid>')
+@movie_ns.route('/<int:mid>/')
 class MovieView(Resource):
 
     @auth_required

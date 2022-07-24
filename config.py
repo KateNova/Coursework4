@@ -7,3 +7,4 @@ class Config(object):
     PWD_HASH_ITERATIONS = 100_000
     JWT_ALGO = 'HS256'
     JWT_SECRET = 's3cR3t'
+    ITEMS_ON_PAGE = 12

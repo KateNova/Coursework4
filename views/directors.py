@@ -18,7 +18,10 @@ class DirectorsView(Resource):
 
     @auth_required
     def get(self) -> Tuple[List[Dict[str, Any]], int]:
-        directors: List[Director] = director_service.get_all()
+        if 'page' in request.args:
+            directors = director_service.get_all(request.args['page'])
+        else:
+            directors: List[Director] = director_service.get_all()
         return directors_schema.dump(directors), 200
 
     @admin_required
@@ -28,7 +31,7 @@ class DirectorsView(Resource):
         return "", 201, {"location": f"/directors/{director.id}"}
 
 
-@director_ns.route('/<int:did>')
+@director_ns.route('/<int:did>/')
 class DirectorView(Resource):
 
     @auth_required

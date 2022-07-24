@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy.orm import scoped_session
 
@@ -14,8 +14,8 @@ class UserDAO:
     def get_one(self, uid: int) -> User:
         return self.session.query(User).get(uid)
 
-    def get_by_name(self, username: str) -> User:
-        return self.session.query(User).filter(User.username == username).one()
+    def get_by_email(self, email: str) -> Optional[User]:
+        return self.session.query(User).filter(User.email == email).one_or_none()
 
     def get_all(self) -> List[User]:
         return self.session.query(User).all()

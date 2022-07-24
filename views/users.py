@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, Any, List
+from typing import Dict, Tuple, Any, List, Optional
 
 from flask import request
 from flask_restx import Resource, Namespace
@@ -20,13 +20,8 @@ class UsersView(Resource):
         all_users: List[User] = user_service.get_all()
         return users_schema.dump(all_users), 200
 
-    def post(self) -> Tuple[str, int, Dict[str, str]]:
-        req_json: Dict[str, Any] = request.json
-        user: User = user_service.create(req_json)
-        return "", 201, {"location": f"/users/{user.id}"}
 
-
-@user_ns.route('/<int:uid>')
+@user_ns.route('/<int:uid>/')
 class UserView(Resource):
     @admin_required
     def get(self, uid: int) -> Tuple[Dict[str, Any], int]:

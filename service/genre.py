@@ -1,5 +1,6 @@
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
+from config import Config
 from dao.genre import GenreDAO
 from dao.model.genre import Genre
 
@@ -13,8 +14,13 @@ class GenreService:
     def get_one(self, gid: int) -> Genre:
         return self.dao.get_one(gid)
 
-    def get_all(self) -> List[Genre]:
-        return self.dao.get_all()
+    def get_all(self, page: Optional[int] = None) -> List[Genre]:
+        if page:
+            limit: Optional[int] = Config.ITEMS_ON_PAGE * page
+            offset: Optional[int] = limit - Config.ITEMS_ON_PAGE
+        else:
+            limit, offset = None, None
+        return self.dao.get_all(limit, offset)
 
     def create(self, genre_d: Dict[str, Any]) -> Genre:
         genre: Genre = Genre(**genre_d)

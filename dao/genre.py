@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy.orm import scoped_session
 
@@ -14,7 +14,9 @@ class GenreDAO:
     def get_one(self, gid: int) -> Genre:
         return self.session.query(Genre).get(gid)
 
-    def get_all(self) -> List[Genre]:
+    def get_all(self, limit: Optional[int], offset: Optional[int]) -> List[Genre]:
+        if limit is not None and offset is not None:
+            return self.session.query(Genre).all().limit(limit).offset(offset)
         return self.session.query(Genre).all()
 
     def create(self, genre: Genre) -> Genre:

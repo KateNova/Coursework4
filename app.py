@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_restx import Api
 
 from config import Config
@@ -8,11 +9,14 @@ from views.directors import director_ns
 from views.genres import genre_ns
 from views.movies import movie_ns
 from views.users import user_ns
+from views.user import user_ns as one_user_ns
 
 
 def create_app(config_object: Config):
     application: Flask = Flask(__name__)
     application.config.from_object(config_object)
+    CORS(application)
+
     register_extensions(application)
     return application
 
@@ -25,6 +29,7 @@ def register_extensions(application: Flask):
     api.add_namespace(movie_ns)
     api.add_namespace(user_ns)
     api.add_namespace(auth_ns)
+    api.add_namespace(one_user_ns)
 
 
 app: Flask = create_app(Config())

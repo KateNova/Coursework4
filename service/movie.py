@@ -1,8 +1,10 @@
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 from dao.model.movie import Movie
 
 from dao.movie import MovieDAO
+
+from config import Config
 
 
 class MovieService:
@@ -14,15 +16,26 @@ class MovieService:
     def get_one(self, mid: int) -> Movie:
         return self.dao.get_one(mid)
 
-    def get_all(self, filters: Dict[str, Any]) -> List[Movie]:
-        if filters.get("director_id") is not None:
-            return self.dao.get_by_director_id(filters.get("director_id"))
-        elif filters.get("genre_id") is not None:
-            return self.dao.get_by_genre_id(filters.get("genre_id"))
-        elif filters.get("year") is not None:
-            return self.dao.get_by_year(filters.get("year"))
+    def get_all(self,
+                filters: Dict[str, Any],
+                page: Optional[int] = None,
+                status: Optional[str] = None) -> List[Movie]:
+        if page:
+            limit: Optional[int] = Config.ITEMS_ON_PAGE * page
+            offset: Optional[int] = limit - Config.ITEMS_ON_PAGE
         else:
-            return self.dao.get_all()
+            limit, offset = None, None
+        order_by = None
+        if status == "new":
+            order_by = Movie.year.desc()
+        if filters.get("director_id") is not None:
+            return self.dao.get_by_director_id(filters.get("director_id"), limit, offset, order_by)
+        elif filters.get("genre_id") is not None:
+            return self.dao.get_by_genre_id(filters.get("genre_id"), limit, offset, order_by)
+        elif filters.get("year") is not None:
+            return self.dao.get_by_year(filters.get("year"), limit, offset)
+        else:
+            return self.dao.get_all(limit, offset, order_by)
 
     def create(self, movie_d: Dict[str, Any]) -> Movie:
         movie: Movie = Movie(**movie_d)
