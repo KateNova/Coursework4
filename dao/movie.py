@@ -20,7 +20,7 @@ class MovieDAO:
                 order_by: Optional[str]) -> List[Movie]:
         if limit is not None and offset is not None:
             if order_by is not None:
-                return self.session.query(Movie).all().order_by(order_by).limit(limit).offset(offset)
+                return self.session.query(Movie).order_by(order_by).limit(limit).offset(offset)
             else:
                 return self.session.query(Movie).limit(limit).offset(offset)
         if order_by is not None:

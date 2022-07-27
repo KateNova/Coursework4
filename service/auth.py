@@ -36,7 +36,7 @@ class AuthService:
                 'refresh_token': refresh_token}
 
     def approve_refresh_taken(self, refresh_token: str):
-        data: Dict[str, str] = jwt.decode(jwt=refresh_token, key=Config.JWT_SECRET, algorithm=Config.JWT_ALGO)
+        data: Dict[str, str] = jwt.decode(jwt=refresh_token, key=Config.JWT_SECRET, algorithms=[Config.JWT_ALGO, ])
         email: Optional[str] = data.get('email', None)
         if email is None:
             raise abort(400)

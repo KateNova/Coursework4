@@ -1,4 +1,3 @@
-
 from flask import request
 from flask_restx import abort
 import jwt
@@ -62,6 +61,6 @@ def user_identification(func):
         if not email:
             abort(403)
 
-        return func(email)
+        return func(*args, **kwargs, email=email)
 
     return wrapper

@@ -23,7 +23,12 @@ class MoviesView(Resource):
             "genre_id": request.args.get("genre_id"),
             "year": request.args.get("year"),
         }
-        movies = movie_service.get_all(filters, request.args.get('page'), request.args.get('status'))
+
+        page = request.args.get('page')
+        if page:
+            page = int(page)
+
+        movies = movie_service.get_all(filters, page, request.args.get('status'))
         return movies_schema.dump(movies), 200
 
     @admin_required

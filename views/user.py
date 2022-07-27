@@ -1,7 +1,7 @@
 from typing import Tuple, Any, Dict
 
 from flask import request
-from flask_restx import Namespace, Resource
+from flask_restx import Namespace, Resource, abort
 
 from dao.model.user import User, UserSchema
 from decorator import user_identification
@@ -14,13 +14,25 @@ user_schema: UserSchema = UserSchema()
 @user_ns.route('/')
 class UserView(Resource):
     @user_identification
-    def get(self, email: str) -> Tuple[Dict[str, Any], int]:
-        user: User = user_service.get_by_email(email)
+    def get(self, *args, **kwargs) -> Tuple[Dict[str, Any], int]:
+        if 'email' in kwargs:
+            user: User = user_service.get_by_email(kwargs['email'])
+            if not user:
+                abort(403)
+        else:
+            abort(401)
+
         return user_schema.dump(user), 200
 
     @user_identification
-    def patch(self, email: str) -> Tuple[str, int]:
-        user: User = user_service.get_by_email(email)
+    def patch(self, *args, **kwargs) -> Tuple[str, int]:
+        if 'email' in kwargs:
+            user: User = user_service.get_by_email(kwargs['email'])
+            if not user:
+                abort(403)
+        else:
+            abort(401)
+
         date = request.json
         user_service.update(user.id, date)
         return '', 204
