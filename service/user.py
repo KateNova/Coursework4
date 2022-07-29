@@ -46,10 +46,13 @@ class UserService:
         if password_1 is None or password_2 is None:
             abort(401)
 
-        if password_1 != password_2:
+        if not self.compare_passwords(user_by_id.password, password_1):
+            raise abort(400)
+
+        if password_1 == password_2:
             abort(401)
 
-        new_password: str = self.encode_password(password_1)
+        new_password: str = self.encode_password(password_2)
         user_by_id.password = new_password
         return self.dao.update(user_by_id)
 
